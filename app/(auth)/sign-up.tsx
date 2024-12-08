@@ -1,10 +1,11 @@
-import { View, Text, ScrollView, Image } from "react-native";
+import { View, Text, ScrollView, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import FormField from "@/components/form-field";
 import CustomButton from "@/components/custom-button";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
+import { createUser } from "@/lib/appwrite";
 
 type formStateType = {
   email: string;
@@ -19,9 +20,35 @@ const SignUp = () => {
     username: "",
   });
 
-  const onSubmit = () => {
-    // Perform sign-in logic here
-    console.log("Sign-in form submitted with values:", formState);
+  const resetForm = () => {
+    setFormState({
+      email: "",
+      password: "",
+      username: "",
+    });
+  };
+
+  const onSubmit = async () => {
+    if (
+      formState.email.trim() === "" ||
+      formState.password.trim() === "" ||
+      formState.username.trim() === ""
+    ) {
+      Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      const newUser = await createUser(formState);
+      console.log(newUser);
+      resetForm();
+      router.replace("/home");
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", (error as { message: string })?.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false);

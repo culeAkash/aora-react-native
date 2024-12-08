@@ -10,8 +10,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../constants";
 import CustomButton from "@/components/custom-button";
 import { StatusBar } from "expo-status-bar";
+import { useContext } from "react";
+import { AuthContext } from "@/context/auth-context-provider";
+import { useAuth } from "@/hooks/useAuth";
+import Loading from "@/components/loading";
 
 export default function Index() {
+  const { isLoading, isLoggedIn } = useAuth();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (!isLoading && isLoggedIn) {
+    return <Redirect href={"/home"} />;
+  }
+
   const handlePress = (event: GestureResponderEvent) => {
     event.preventDefault();
     router.push("/sign-in");

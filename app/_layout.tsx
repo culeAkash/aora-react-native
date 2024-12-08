@@ -2,6 +2,7 @@ import { SplashScreen, Stack } from "expo-router";
 import "../global.css";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
+import { AuthContextProvider } from "@/context/auth-context-provider";
 
 export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
@@ -33,11 +34,13 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="/search/[query]" options={{ headerShown: false }} />
-    </Stack>
+    <AuthContextProvider>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="/search/[query]" options={{ headerShown: false }} />
+      </Stack>
+    </AuthContextProvider>
   );
 }
