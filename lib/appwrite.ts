@@ -1,4 +1,4 @@
-import { CreateUserType } from "@/utils/types";
+import { CreateUserType, CreateVideoType } from "@/utils/types";
 import {
   Account,
   Avatars,
@@ -94,5 +94,63 @@ export const getCurrentUser = async () => {
     return currentUser;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getAllPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId
+    );
+    // console.log(posts.documents);
+
+    return posts.documents;
+  } catch (error) {
+    throw new Error("Failed to get posts");
+  }
+};
+
+export const getLatestPosts = async () => {
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId,
+      [Query.orderDesc("$createdAt"), Query.limit(7)]
+    );
+    // console.log(posts.documents);
+
+    return posts.documents;
+  } catch (error) {
+    throw new Error("Failed to get posts");
+  }
+};
+
+export const createVideo = async ({
+  title,
+  prompt,
+  thumbnail,
+  video,
+}: CreateVideoType) => {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error("Failed to get user");
+    const newVideo = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.videoCollectionId,
+      ID.unique(),
+      {
+        creator: currentUser.documents[0].$id,
+        title,
+        prompt,
+        thumbnail,
+        video,
+      }
+    );
+    if (!newVideo) throw new Error("Failed to create video");
+    return newVideo;
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to create video");
   }
 };
