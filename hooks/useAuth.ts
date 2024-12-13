@@ -17,7 +17,7 @@ export const useAuth = () => {
       .then((response) => {
         if (response) {
           setIsLoggedIn(true);
-          console.log(response);
+          // console.log(response);
 
           setUser(response.documents[0] as any);
         } else {
